@@ -1,4 +1,6 @@
 version: "3" #版本号
+networks: # 网络
+  byfn:
 services:
   elasticsearch-1: #服务名
     image: elasticsearch:6.4.2 #镜像
@@ -10,6 +12,8 @@ services:
       - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
     environment:
       ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+    networks:
+      - byfn
 
   logstash:
     image: logstash:6.4.2
@@ -20,6 +24,8 @@ services:
       - /var/log/nginx:/var/log/nginx
     ports:
       - "5000:5000"
+    networks:
+      - byfn
 
   kibana:
     image: kibana:6.4.2
@@ -28,3 +34,41 @@ services:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
     ports:
       - "5601:5601"
+    networks:
+      - byfn
+
+  etcd1:
+    image: quay.io/coreos/etcd
+    container_name: etcd1
+    command: etcd -name etcd1 -advertise-client-urls http://0.0.0.0:2379 -listen-client-urls http://0.0.0.0:2379 -listen-peer-urls http://0.0.0.0:2380 -initial-cluster-token etcd-cluster -initial-cluster "etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380" -initial-cluster-state new
+    environment:
+      - ETCDCTL_API=3
+    ports:
+      - 2379:2379
+      - 2380:2380
+    networks:
+      - byfn
+
+  etcd2:
+    image: quay.io/coreos/etcd
+    container_name: etcd2
+    command: etcd -name etcd2 -advertise-client-urls http://0.0.0.0:2379 -listen-client-urls http://0.0.0.0:2379 -listen-peer-urls http://0.0.0.0:2380 -initial-cluster-token etcd-cluster -initial-cluster "etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380" -initial-cluster-state new
+    environment:
+      - ETCDCTL_API=3
+    ports:
+      - 22379:2379
+      - 22380:2380
+    networks:
+      - byfn
+
+  etcd3:
+    image: quay.io/coreos/etcd
+    container_name: etcd3
+    command: etcd -name etcd3 -advertise-client-urls http://0.0.0.0:2379 -listen-client-urls http://0.0.0.0:2379 -listen-peer-urls http://0.0.0.0:2380 -initial-cluster-token etcd-cluster -initial-cluster "etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380" -initial-cluster-state new
+    environment:
+      - ETCDCTL_API=3
+    ports:
+      - 23379:2379
+      - 23380:2380
+    networks:
+      - byfn
