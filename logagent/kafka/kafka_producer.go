@@ -15,7 +15,7 @@ func NewKafka(address []string) (err error) {
 	kafkaConfig.Producer.RequiredAcks = sarama.WaitForAll
 	kafkaConfig.Producer.Partitioner = sarama.NewRandomPartitioner
 	kafkaConfig.Producer.Return.Successes = true
-	kafkaConfig.Version = sarama.V0_10_0_1  //注意设置版本
+	kafkaConfig.Version = sarama.V0_10_0_1 //注意设置版本
 
 	kafkaClient, err = sarama.NewSyncProducer(address, kafkaConfig)
 	if err != nil {
