@@ -3,6 +3,7 @@ package config
 import (
 	"errors"
 	"github.com/astaxie/beego/config"
+	"shumin-project/elk-server/logagent/taillog"
 	"strings"
 )
 
@@ -11,12 +12,15 @@ type Conf struct {
 	CollectionKey string   // 前缀
 	KafkaHost     []string //kafka
 	EtcdHost      []string //etcd
+	Collects     []taillog.TailCollection
+	IP string
+	Chansize     int
 }
 
 var AgentConf *Conf
 
 // 加载配置信息
-func loadConf(confType, confPath string) (err error) {
+func LoadConf(confType, confPath string) (err error) {
 	conf, err := config.NewConfig(confType, confPath)
 	if err != nil {
 		return
