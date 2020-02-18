@@ -1,0 +1,30 @@
+version: "3" #版本号
+services:
+  elasticsearch-1: #服务名
+    image: elasticsearch:6.4.2 #镜像
+    container_name: elasticsearch-1 # 容器名
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+
+  logstash:
+    image: logstash:6.4.2
+    container_name: logstash
+    command: logstash -f /etc/logstash/conf.d/logstash.conf
+    volumes:
+      - ./logstash/conf.d:/etc/logstash/conf.d
+      - /var/log/nginx:/var/log/nginx
+    ports:
+      - "5000:5000"
+
+  kibana:
+    image: kibana:6.4.2
+    container_name: kibana
+    environment: #在kibana中指定es地址，使用容器名称进行连接
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
