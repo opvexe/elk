@@ -6,6 +6,7 @@ import (
 	"shumin-project/elk-server/logagent/config"
 	"shumin-project/elk-server/logagent/etcd"
 	"shumin-project/elk-server/logagent/kafka"
+	"shumin-project/elk-server/logagent/server"
 	"shumin-project/elk-server/logagent/taillog"
 )
 
@@ -52,4 +53,11 @@ func main() {
 		 return
 	 }
 
+	 // 启动服务
+	 err =server.Run()
+	 if err!=nil{
+	 	fmt.Println("start server run err:",err)
+		 return
+	 }
+	 fmt.Println("服务退出")
 }

@@ -54,7 +54,8 @@ func NewEtcd(address []string, key string) (err error) {
 					fmt.Printf("json unmarsha key:%s failed,err:%s", v.Key, err)
 					continue
 				}
-
+				//设置生效ip
+				config.AgentConf.IP = ip
 			}
 		}
 	}

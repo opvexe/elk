@@ -43,6 +43,13 @@ func getAgentConf(conf config.Configer) (err error) {
 	}
 	AgentConf.LogPath = logPath
 
+	// 获取日志chan大小
+	chanSize,ok := conf.Int("log::chan_size")
+	if ok !=nil{
+		chanSize = 200
+	}
+	AgentConf.Chansize = chanSize
+
 	//获取etcd 地址
 	etcdHosts := conf.String("etcd::kafka_host")
 	if len(etcdHosts) == 0 {
