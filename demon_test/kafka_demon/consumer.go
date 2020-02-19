@@ -11,17 +11,17 @@ import (
 // kafka消费者
 type KafkaClient struct {
 	client sarama.Consumer
-	topic []string // topic列表
+	topic  []string // topic列表
 }
 
 var (
 	kafkaClient *KafkaClient
-	runTopic []string	//正在运行的topic任务
+	runTopic    []string //正在运行的topic任务
 )
 
-func NewKafkaConsumer(hosts []string,topics []string) (err error) {
-	consumer,err := sarama.NewConsumer(hosts,nil)
-	if err!=nil{
+func NewKafkaConsumer(hosts []string, topics []string) (err error) {
+	consumer, err := sarama.NewConsumer(hosts, nil)
+	if err != nil {
 		return
 	}
 	kafkaClient = &KafkaClient{
@@ -29,7 +29,7 @@ func NewKafkaConsumer(hosts []string,topics []string) (err error) {
 		topic:  topics,
 	}
 	//创建topic任务
-	for _, topic := range topics{
+	for _, topic := range topics {
 		go createTopicTask(topic)
 	}
 	return
@@ -38,7 +38,7 @@ func NewKafkaConsumer(hosts []string,topics []string) (err error) {
 // 判断topic是否在运行
 func isTopicExists(topic string) (ok bool) {
 	ok = false
-	for _, t := range runTopic{
+	for _, t := range runTopic {
 		if t == topic {
 			ok = true
 			break
@@ -48,34 +48,34 @@ func isTopicExists(topic string) (ok bool) {
 }
 
 //创建kafka topic消费者任务
-func createTopicTask(topic string)  {
+func createTopicTask(topic string) {
 	time.Sleep(time.Second)
-	if isTopicExists(topic) == true{
+	if isTopicExists(topic) == true {
 		return
 	}
 	var wg sync.WaitGroup
-	partionList,err := kafkaClient.client.Partitions(topic)
-	if err!=nil{
+	partionList, err := kafkaClient.client.Partitions(topic)
+	if err != nil {
 		logs.Error("get topic: [%s] partitions failed, err: %s", topic, err)
 		return
 	}
-	for partion := range partionList{
+	for partion := range partionList {
 		pc, err := kafkaClient.client.ConsumePartition(topic, int32(partion), sarama.OffsetNewest)
-		if err!=nil{
+		if err != nil {
 			logs.Warn("topic: [%s] start cousumer partition failed, err: %s", topic, err)
 			continue
 		}
 		defer pc.AsyncClose()
 		wg.Add(1)
 		go func(pc sarama.PartitionConsumer) {
-			for msg := range pc.Messages(){
+			for msg := range pc.Messages() {
 				fmt.Println(msg)
 			}
 			wg.Done()
 		}(pc)
 	}
 	// 启动成功的topic任务添加到列表中去
-	runTopic = append(runTopic,topic)
+	runTopic = append(runTopic, topic)
 	wg.Wait()
 }
 

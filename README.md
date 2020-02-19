@@ -28,3 +28,22 @@ Kafka选择分区模式(3种)：
 - `1 :`把数据发送给leader,等待leaader确认回ACK
 - `all :`把数据发送给leader，确保follow从leader拉取数据回复ACK给leader,leader在回复ACK，安全性最高
 
+### docker-compose 搭建elk
+
+```shell
+$ cd home/
+$ git clone https://github.com/deviantony/docker-elk.git # 下载配置文件
+$ docker-compose up -d  #启动elk 
+$ docker-compose ps # 查看
+$ docker-compose down 
+$ docker-compose restart
+```
+
+###  kibana
+
+```shell
+http://127.0.0.1:5601
+user:elastic # 用户
+password:changeme#密码
+```
+
